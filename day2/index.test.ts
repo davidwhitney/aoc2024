@@ -23,4 +23,9 @@ describe('Day 2', () => {
         const result = day2(input);
         assert.equal(result, 479);
     });
+
+    // it("part 2 - are reports safe example", () => {
+    //     const result = day2(testInput, true);
+    //     assert.equal(result, 4);
+    // });
 });

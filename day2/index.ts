@@ -1,4 +1,4 @@
-export default function day2(input: string) {
+export default function day2(input: string, dampen: boolean = false) {
     const lines = input.split('\n');
     
     const sequences = lines
@@ -7,13 +7,13 @@ export default function day2(input: string) {
         .map(Number));
 
     const sequenceAndSafty = sequences.map(seq => {
-        return { seq, safe: isSafeSequence(seq) };
+        return { seq, safe: isSafeSequence(seq, dampen) };
     });
 
     return sequenceAndSafty.filter(x => x.safe).length;
 }
 
-function isSafeSequence(seq: number[]) {
+function isSafeSequence(seq: number[], dampen: boolean) {
     let previousDirection = "";
 
     for (let i = 1; i < seq.length; i++) {
@@ -24,13 +24,8 @@ function isSafeSequence(seq: number[]) {
         const increasing = prev < current;
         const decreasing = prev > current;
 
-        if (increasing && previousDirection === "decreasing") {
-            console.log("Unsafe", seq);
-            return false;
-        }
-
-        if (decreasing && previousDirection === "increasing") {
-            console.log("Unsafe", seq);
+        if ((increasing && previousDirection === "decreasing")
+            || (decreasing && previousDirection === "increasing")) {
             return false;
         }
 
@@ -39,11 +34,9 @@ function isSafeSequence(seq: number[]) {
         const safe = difference >= 1 && difference <= 3;
 
         if (!safe) {
-            console.log("Unsafe", seq);
             return false;
         }
     }
 
-    console.log("Safe", seq);
     return true;
 }
