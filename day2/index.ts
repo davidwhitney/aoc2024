@@ -1,24 +1,16 @@
 export default function day2(input: string) {
-    let total = 0;
     const lines = input.split('\n');
+    
+    const sequences = lines
+        .map(line => line.split(' ')
+        .filter(x => x !== ' ')
+        .map(Number));
 
-    console.log("Found", lines.length, "lines");
+    const sequenceAndSafty = sequences.map(seq => {
+        return { seq, safe: isSafeSequence(seq) };
+    });
 
-    for (const line of lines) {
-        const numbers = line
-            .split(' ')
-            .filter(x => x !== ' ')
-            .map(Number);
-
-        console.log(numbers.length);
-
-        const safe = isSafeSequence(numbers);
-        if (safe) {
-            total++;
-        }
-    }
-
-  return total;
+    return sequenceAndSafty.filter(x => x.safe).length;
 }
 
 function isSafeSequence(seq: number[]) {
