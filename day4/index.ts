@@ -6,7 +6,7 @@ export default function(input: string) {
     
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < width; y++) {
-            const wordsFoundFromLocation = checkGridLocation(grid, x, y);
+            const wordsFoundFromLocation = checkGridLocation(grid, x, y, "XMAS");
             totalFound += wordsFoundFromLocation;            
         }
     }
@@ -14,9 +14,9 @@ export default function(input: string) {
     return totalFound;
 }
 
-function checkGridLocation(grid: string[][], x: number, y: number) {
+function checkGridLocation(grid: string[][], x: number, y: number, target: string) {
     const startValue = grid[x][y];
-    if (startValue !== 'X') {
+    if (startValue !== target[0]) {
         return 0;
     }
 
@@ -35,15 +35,19 @@ function checkGridLocation(grid: string[][], x: number, y: number) {
 
     for (const direction of directions) {
         const [dx, dy] = direction;
-        const nextThreeCells = [
-            grid[x + dx]?.[y + dy],
-            grid[x + (2 * dx)]?.[y + (2 * dy)],
-            grid[x + (3 * dx)]?.[y + (3 * dy)]
+
+        const targetCells: any[] = [
+            grid[x][y]
         ];
 
-        const value = "X" + nextThreeCells.join(''); //?
-        if (value === 'XMAS') {
-            matches++; //?
+        for (let i = 0; i < target.length - 1; i++) {
+            const cell = grid[x + ((i + 1) * dx)]?.[y + ((i + 1) * dy)];
+            targetCells.push(cell);
+        }        
+
+        const value = targetCells.join('');
+        if (value === target) {
+            matches++;
         }
     }
 
