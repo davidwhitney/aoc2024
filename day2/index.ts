@@ -14,6 +14,7 @@ export default function day2(input: string, dampen: boolean = false) {
 }
 
 function isSafeSequence(seq: number[], dampen: boolean) {
+    let seqSafe = true;
     let previousDirection = "";
 
     for (let i = 0; i < seq.length - 1; i++) {
@@ -34,9 +35,28 @@ function isSafeSequence(seq: number[], dampen: boolean) {
         previousDirection = increasing ? "increasing" : "decreasing";
 
         if (!safe) {
-            return false;
+            seqSafe = false;
+            break;
         }
     }
 
-    return true;
+    if (!seqSafe && dampen) {
+        const alternateSequences = seq.map((x, i) => {
+            const adjustedSeq = [...seq];
+            adjustedSeq.splice(i, 1);
+            return adjustedSeq;
+        });
+
+        const ofWhichAreSafe = alternateSequences.map(altSeq => {
+            return isSafeSequence(altSeq, false);
+        });
+
+        const anyAdjustedSequenceIsSafe = ofWhichAreSafe.some(x => x);
+
+        if (anyAdjustedSequenceIsSafe) {
+            seqSafe = true;
+        }
+    }
+
+    return seqSafe;
 }
