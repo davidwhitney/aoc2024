@@ -37,13 +37,15 @@ const input = fileContents.trim();
 
 describe('Day 4', () => {
     it("part 1 - example", () => {
-        const result = day5(testInput);
-        expect(result).toEqual(143);
+        const [checksum, correctedChecksum] = day5(testInput);
+        expect(checksum).toEqual(143);
+        expect(correctedChecksum).toEqual(123);
     });
 
     it("part 1 - input", () => {
-        const result = day5(input);
-        expect(result).toEqual(4135);
+        const [checksum, correctedChecksum] = day5(input);
+        expect(checksum).toEqual(4135);
+        expect(correctedChecksum).toEqual(5285);
     });
    
 });

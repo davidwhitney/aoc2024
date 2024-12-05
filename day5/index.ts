@@ -1,47 +1,77 @@
 export default function(input: string) {
     const { orderRules, printSchedules } = parse(input);
-
-    console.log(printSchedules);
-
-    const validSchedules: number[][] = []
+    const validSchedules: number[][] = [];
+    const invalidSchedules: number[][] = [];
 
     for (const schedule of printSchedules) {
-        const isValid = isValidSchedule(schedule, orderRules);
-        if (isValid) {
+        if (isValidSchedule(schedule, orderRules)) {
             validSchedules.push(schedule);
+        } else {
+            invalidSchedules.push(schedule);
         }
     }
 
-    let checksum = 0;
-    for (const schedule of validSchedules) {
-        const middleIndex = Math.floor(schedule.length / 2);
-        checksum += schedule[middleIndex];
+    const correctedSchedules: number[][] = [];
+    for (const schedule of invalidSchedules) {
+        const corrected = reorder(schedule, orderRules);
+        correctedSchedules.push(corrected);
+        console.log("Corrected", schedule, corrected);
     }
 
-    return checksum;
+    const validChecksum = validSchedules.reduce((acc, schedule) => {
+        const middleIndex = Math.floor(schedule.length / 2);
+        return acc + schedule[middleIndex]
+    }, 0);
+
+    const correctedChecksum = correctedSchedules.reduce((acc, schedule) => {
+        const middleIndex = Math.floor(schedule.length / 2);
+        return acc + schedule[middleIndex]
+    }, 0);
+
+    return [validChecksum, correctedChecksum];
 }
 
-function isValidSchedule(schedule: number[], orderRules: number[][]) {
-    console.log("Assessing", schedule);
-
-    const rulesClone = [...orderRules];
+function applicableRulesFor(schedule: number[], orderRules: number[][]) {
     const applicableRules: number[][] = [];
-
-    for (const rule of rulesClone) {
+    for (const rule of orderRules) {
         if (schedule.includes(rule[0]) && schedule.includes(rule[1])) {
             applicableRules.push(rule);
         }
     }
 
-    console.log("Applicable rules count:", applicableRules.length + "/" + orderRules.length);
+    return applicableRules;
+}
 
+function reorder(schedule: number[], orderRules: number[][]) {    
+    const applicableRules = applicableRulesFor(schedule, orderRules);
+    let scheduleShuffled = [...schedule];
+
+    do {
+        for (const rule of applicableRules) {
+            const [before, after] = rule;
+            const beforeIndex = scheduleShuffled.indexOf(before);
+            const afterIndex = scheduleShuffled.indexOf(after);
+
+            if (beforeIndex > afterIndex) {
+                const beforeIndex = scheduleShuffled.indexOf(before);
+                const afterIndex = scheduleShuffled.indexOf(after);
+
+                scheduleShuffled.splice(beforeIndex, 1);
+                scheduleShuffled.splice(afterIndex, 0, before);
+            }
+        }
+    } while (!isValidSchedule(scheduleShuffled, orderRules));
+
+    return scheduleShuffled;
+}
+
+function isValidSchedule(schedule: number[], orderRules: number[][]) {
+    const applicableRules = applicableRulesFor(schedule, orderRules);
     for (const [before, after] of applicableRules) {
         const beforeIndex = schedule.indexOf(before);
         const afterIndex = schedule.indexOf(after);
 
         if (beforeIndex > afterIndex) {
-            console.log(before, "should come before", after);
-            console.log("Invalid schedule", schedule);
             return false;
         }
     }
