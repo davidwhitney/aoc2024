@@ -1,12 +1,14 @@
 export default function(input: string) {
     const { orderRules, printSchedules } = parse(input);
+    
     const validSchedules = printSchedules.filter(schedule => isValidSchedule(schedule, orderRules));
     const invalidSchedules = printSchedules.filter(schedule => !isValidSchedule(schedule, orderRules));
     const correctedSchedules = invalidSchedules.map(schedule => reorder(schedule, orderRules));
 
-    const validChecksum = checksum(validSchedules);
-    const correctedChecksum = checksum(correctedSchedules);
-    return [validChecksum, correctedChecksum];
+    return [
+        checksum(validSchedules), 
+        checksum(correctedSchedules)
+    ];
 }
 
 function checksum(schedules: number[][]) {
@@ -17,14 +19,7 @@ function checksum(schedules: number[][]) {
 }
 
 function applicableRulesFor(schedule: number[], orderRules: number[][]) {
-    const applicableRules: number[][] = [];
-    for (const rule of orderRules) {
-        if (schedule.includes(rule[0]) && schedule.includes(rule[1])) {
-            applicableRules.push(rule);
-        }
-    }
-
-    return applicableRules;
+    return orderRules.filter(([before, after]) => schedule.includes(before) && schedule.includes(after));
 }
 
 function isValidSchedule(schedule: number[], orderRules: number[][]) {
@@ -39,6 +34,29 @@ function isValidSchedule(schedule: number[], orderRules: number[][]) {
     }
 
     return true;
+}
+
+function reorder(schedule: number[], orderRules: number[][]) {    
+    const applicableRules = applicableRulesFor(schedule, orderRules);
+    let scheduleShuffled = [...schedule];
+
+    do {
+        for (const rule of applicableRules) {
+            const [before, after] = rule;
+            const beforeIndex = scheduleShuffled.indexOf(before);
+            const afterIndex = scheduleShuffled.indexOf(after);
+
+            if (beforeIndex > afterIndex) {
+                const beforeIndex = scheduleShuffled.indexOf(before);
+                const afterIndex = scheduleShuffled.indexOf(after);
+
+                scheduleShuffled.splice(beforeIndex, 1);
+                scheduleShuffled.splice(afterIndex, 0, before);
+            }
+        }
+    } while (!isValidSchedule(scheduleShuffled, orderRules));
+
+    return scheduleShuffled;
 }
 
 function parse(input: string): { orderRules: number[][], printSchedules: number[][] } {
@@ -63,27 +81,4 @@ function parse(input: string): { orderRules: number[][], printSchedules: number[
     }
 
     return { orderRules, printSchedules };
-}
-
-function reorder(schedule: number[], orderRules: number[][]) {    
-    const applicableRules = applicableRulesFor(schedule, orderRules);
-    let scheduleShuffled = [...schedule];
-
-    do {
-        for (const rule of applicableRules) {
-            const [before, after] = rule;
-            const beforeIndex = scheduleShuffled.indexOf(before);
-            const afterIndex = scheduleShuffled.indexOf(after);
-
-            if (beforeIndex > afterIndex) {
-                const beforeIndex = scheduleShuffled.indexOf(before);
-                const afterIndex = scheduleShuffled.indexOf(after);
-
-                scheduleShuffled.splice(beforeIndex, 1);
-                scheduleShuffled.splice(afterIndex, 0, before);
-            }
-        }
-    } while (!isValidSchedule(scheduleShuffled, orderRules));
-
-    return scheduleShuffled;
 }
