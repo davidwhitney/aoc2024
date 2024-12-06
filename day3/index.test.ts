@@ -2,15 +2,15 @@ import fs from 'fs';
 import { describe, it, assert } from 'vitest';
 import day3 from './index';
 
-const testInput = `xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))`.trim();
-const testInput2 = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))".trim();
+const example = `xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))`.trim();
+const example2 = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))".trim();
 
 const fileContents = fs.readFileSync('./day3/input.txt', 'utf8')
 const input = fileContents.trim();
 
 describe('Day 3', () => {
     it("part 1 - example", () => {
-        const result = day3(testInput);
+        const result = day3(example);
         assert.equal(result, 161);
     });
 
@@ -20,7 +20,7 @@ describe('Day 3', () => {
     });
 
     it("part 2 - do and don't example", () => {
-        const result = day3(testInput2, true);
+        const result = day3(example2, true);
         assert.equal(result, 48);
     });
 

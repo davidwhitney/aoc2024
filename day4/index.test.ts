@@ -2,7 +2,7 @@ import fs from 'fs';
 import { describe, it, assert } from 'vitest';
 import day4 from './index';
 
-const testInput = `
+const example = `
 MMMSXXMASM
 MSAMXMSMSA
 AMXSXMAAMM
@@ -19,12 +19,12 @@ const input = fileContents.trim();
 
 describe('Day 4', () => {
     it("part 1 - example", () => {
-        const result = day4(testInput);
+        const result = day4(example);
         assert.equal(result[0], 18);
         assert.equal(result[1], 9);
     });
 
-    it("part 1 - examinputple", () => {
+    it("part 1 - example input", () => {
         const result = day4(input);
         assert.equal(result[0], 2567);
         assert.equal(result[1], 2029);

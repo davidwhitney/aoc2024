@@ -2,7 +2,7 @@ import fs from 'fs';
 import { describe, it, assert } from 'vitest';
 import day2 from '.';
 
-const testInput = `
+const example = `
 7 6 4 2 1
 1 2 7 8 9
 9 7 6 2 1
@@ -15,7 +15,7 @@ const input = fileContents.trim();
 
 describe('Day 2', () => {
     it("part 1 - are reports safe example", () => {
-        const result = day2(testInput);
+        const result = day2(example);
         assert.equal(result, 2);
     });
     
@@ -25,7 +25,7 @@ describe('Day 2', () => {
     });
 
     it("part 2 - are reports safe example", () => {
-        const result = day2(testInput, true);
+        const result = day2(example, true);
         assert.equal(result, 4);
     });
         

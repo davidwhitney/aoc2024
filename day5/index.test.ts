@@ -2,7 +2,7 @@ import fs from 'fs';
 import { describe, it, assert, expect } from 'vitest';
 import day5 from './index';
 
-const testInput = `
+const example = `
 47|53
 97|13
 97|61
@@ -37,7 +37,7 @@ const input = fileContents.trim();
 
 describe('Day 4', () => {
     it("part 1 - example", () => {
-        const [checksum, correctedChecksum] = day5(testInput);
+        const [checksum, correctedChecksum] = day5(example);
         expect(checksum).toEqual(143);
         expect(correctedChecksum).toEqual(123);
     });
