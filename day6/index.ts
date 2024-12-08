@@ -10,21 +10,15 @@ movement.set('W', { row: 0, col: -1 });
 
 export default function walk(input: string | string[][]) {
     let { map, currentLoc } = parseMap(input);
-    let loopDetected = false;
-    
-    //const visited: Location[] = [currentLoc];
     const visitedFromDirections = new Map<string, Direction[]>();
-    
-    let iteration = 0;
-    while (iteration < 20_000) {       
+
+    while (true) {       
         const delta = movement.get(currentLoc.direction)!;
         const nextLoc: Position = { 
             row: currentLoc.row + delta.row, 
             col: currentLoc.col + delta.col, 
             direction: currentLoc.direction 
         };
-
-        const cellId = `${nextLoc.row}x${nextLoc.col}`;
 
         if (!inBounds(nextLoc, map)) {
             map[currentLoc.row][currentLoc.col] = "X";
@@ -38,10 +32,10 @@ export default function walk(input: string | string[][]) {
                 currentLoc = { ...currentLoc, direction: turnRight(currentLoc.direction) };
                 break;                
             default:
+                const cellId = `${nextLoc.row}x${nextLoc.col}`;
                 const visitedFrom = visitedFromDirections.get(cellId) || [];
                 if (visitedFrom.includes(currentLoc.direction)) {
-                    loopDetected = true;
-                    break;
+                    return { visited: [], loopDetected: true };
                 }
 
                 visitedFrom.push(currentLoc.direction);
@@ -51,17 +45,10 @@ export default function walk(input: string | string[][]) {
                 currentLoc = { ...nextLoc };
                 break;
         }
-
-        iteration++;
     }
 
-    const visited = [...cells(map)].filter(([row, col, value]) => value === "X");
-
-    //console.log(map);
-    //console.log(visitedFromDirections);
-
-
-    return { visited, loopDetected };
+    const visited = [...cells(map)].filter(([_, __, value]) => value === "X");
+    return { visited, loopDetected: false };
 }
 
 function* cells(map: string[][]): Iterable<[number, number, string]> {
@@ -77,7 +64,7 @@ export function countInfiniteLoopObstructions(input: string) {
     const regularRoutePath = walk(input);
 
     let loopsFound = 0;
-    for (const [row, col, value] of regularRoutePath.visited) {
+    for (const [row, col] of regularRoutePath.visited) {
         const { map, currentLoc } = parseMap(input, false);
         const location = { row, col };
 
@@ -104,10 +91,6 @@ function parseMap(input: string | string[][], removeStart = true) {
         : input.split('\n').map(row => row.split(''));
 
     const { row, col } = findStartPosition(map);
-
-    if (removeStart) {
-        map[row][col] = '.';
-    }
 
     return {
         map: map,

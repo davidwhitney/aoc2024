@@ -35,7 +35,7 @@ describe('Day 4', () => {
 
     // it("part 2 - input", () => {
     //     const count = countInfiniteLoopObstructions(input);
-    //     expect(count).toEqual(6); // 1933
+    //     expect(count).toEqual(1933);
     // });
    
 });
