@@ -10,11 +10,13 @@ movement.set('W', { row: 0, col: -1 });
 
 export default function walk(input: string | string[][]) {
     let { map, currentLoc } = parseMap(input);
-
     let loopDetected = false;
-    const visited: Location[] = [currentLoc];
     
-    while (true) {       
+    //const visited: Location[] = [currentLoc];
+    const visitedFromDirections = new Map<string, Direction[]>();
+    
+    let iteration = 0;
+    while (iteration < 20_000) {       
         const delta = movement.get(currentLoc.direction)!;
         const nextLoc: Position = { 
             row: currentLoc.row + delta.row, 
@@ -22,35 +24,62 @@ export default function walk(input: string | string[][]) {
             direction: currentLoc.direction 
         };
 
+        const cellId = `${nextLoc.row}x${nextLoc.col}`;
+
         if (!inBounds(nextLoc, map)) {
+            map[currentLoc.row][currentLoc.col] = "X";
             break;
         }
 
-        switch (map[nextLoc.row][nextLoc.col]) {
+        const value = map[nextLoc.row][nextLoc.col];
+        switch (value) {
             case '#':
             case 'O':
                 currentLoc = { ...currentLoc, direction: turnRight(currentLoc.direction) };
                 break;                
-            case '.':
-                if (!visited.some(x => locationEquals(x, nextLoc))) {
-                    visited.push({ col: nextLoc.col, row: nextLoc.row });
+            default:
+                const visitedFrom = visitedFromDirections.get(cellId) || [];
+                if (visitedFrom.includes(currentLoc.direction)) {
+                    loopDetected = true;
+                    break;
                 }
 
+                visitedFrom.push(currentLoc.direction);
+                visitedFromDirections.set(cellId, visitedFrom);
+
+                map[currentLoc.row][currentLoc.col] = "X";
                 currentLoc = { ...nextLoc };
                 break;
         }
 
+        iteration++;
     }
 
+    const visited = [...cells(map)].filter(([row, col, value]) => value === "X");
+
+    //console.log(map);
+    //console.log(visitedFromDirections);
+
+
     return { visited, loopDetected };
+}
+
+function* cells(map: string[][]): Iterable<[number, number, string]> {
+    for (let rowIndex = 0; rowIndex < map.length; rowIndex++) {
+        for (let colIndex = 0; colIndex < map[rowIndex].length; colIndex++) {
+            const value = map[rowIndex][colIndex];
+            yield [ rowIndex, colIndex, value];
+        }
+    }
 }
 
 export function countInfiniteLoopObstructions(input: string) {
     const regularRoutePath = walk(input);
 
     let loopsFound = 0;
-    for (const location of regularRoutePath.visited) {
+    for (const [row, col, value] of regularRoutePath.visited) {
         const { map, currentLoc } = parseMap(input, false);
+        const location = { row, col };
 
         if (locationEquals(location, currentLoc)) {
             // Don't obstruct start position
@@ -58,7 +87,7 @@ export function countInfiniteLoopObstructions(input: string) {
         }
 
         // Add obstruction on route
-        map[location.row][location.col] = 'O';
+        map[row][col] = 'O';
         const { loopDetected } = walk(map);
 
         if (loopDetected) {
@@ -94,10 +123,6 @@ function findStartPosition(map: string[][]) {
 
 function locationEquals(a: Location, b: Location) {
     return a.row === b.row && a.col === b.col;
-}
-
-function positionEquals(a: Position, b: Position) {
-    return locationEquals(a, b) && a.direction === b.direction;
 }
 
 function inBounds(position: Location, map: string[][]) {    

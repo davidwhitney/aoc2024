@@ -28,14 +28,14 @@ describe('Day 4', () => {
         expect(visited.length).toEqual(5095);
     });
 
-    // it("part 2 - example", () => {
-    //     const count = countInfiniteLoopObstructions(example);
-    //     expect(count).toEqual(6);
-    // });
+    it("part 2 - example", () => {
+        const count = countInfiniteLoopObstructions(example);
+        expect(count).toEqual(6);
+    });
 
     // it("part 2 - input", () => {
     //     const count = countInfiniteLoopObstructions(input);
-    //     expect(count).toEqual(6);
+    //     expect(count).toEqual(6); // 1933
     // });
    
 });
