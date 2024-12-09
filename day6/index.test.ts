@@ -14,7 +14,7 @@ const example = `
 #.........
 ......#...`.trim();
 
-const fileContents = fs.readFileSync('./input.txt', 'utf8')
+const fileContents = fs.readFileSync('./day6/input.txt', 'utf8')
 const input = fileContents.trim();
 
 describe('Day 4', () => {
@@ -33,6 +33,7 @@ describe('Day 4', () => {
         expect(count).toEqual(6);
     });
 
+    // Correct, but slow, so commenting for Wallab.js runs :) 
     // it("part 2 - input", () => {
     //     const count = countInfiniteLoopObstructions(input);
     //     expect(count).toEqual(1933);
